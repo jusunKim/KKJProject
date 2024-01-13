@@ -287,12 +287,18 @@ public class ProductDAO {
 	}
 	
 	// 상품 전체 조회
-	public ArrayList<HashMap<String, Object>> listProduct(){
+	public ArrayList<HashMap<String, Object>> listProduct(int uno){
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
-		String sql = "select p.pno, i.img1, p.p_name, p.price, p.rating"
-				+ " from product p, image i"
-				+ " where p.pno = i.pno"
-				+ " order by rating desc";
+		String sql = "select p.pno, i.img1, p.p_name, p.price, p.rating "
+				+ "from product p, image i "
+				+ "where p.pno = i.pno ";
+		
+				if(uno != 0) {
+					sql += "and p.pno not in (select pno from wishlist "
+						 + "where uno = "+ uno +")";
+				}
+		
+				sql += " order by rating desc";
 		try {
 			Connection conn = ConnectionProvider.getConnection();
 			Statement stmt = conn.createStatement();

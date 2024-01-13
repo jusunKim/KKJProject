@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 import com.sist.db.ConnectionProvider;
 import com.sist.vo.QnaVO;
-import com.sist.vo.ReviewVO;
 
 public class QnaDAO {
 	//싱글턴 객체 다오
@@ -105,10 +104,10 @@ public class QnaDAO {
 		return list;
 	}
 	
-	//<전체 문의사항 조회>관리자용. 추후 검색기능 추가 시 매개변수 들어갈 듯
-	public ArrayList<QnaVO> listQna(){
+	//<답변 완료된 문의사항 조회>관리자용. 추후 검색기능 추가 시 매개변수 들어갈 듯
+	public ArrayList<QnaVO> listAnsweredQna(){
 		ArrayList<QnaVO> list = new ArrayList<QnaVO>();
-		String sql = "select * from qna";
+		String sql = "select * from qna where a_content is not null order by q_date";
 		try {
 			Connection conn =ConnectionProvider.getConnection();
 			Statement stmt = conn.createStatement();
@@ -125,6 +124,25 @@ public class QnaDAO {
 		return list;
 	}
 	
+	//<답변 이전 문의사항 조회>관리자용. 추후 검색기능 추가 시 매개변수 들어갈 듯
+	public ArrayList<QnaVO> lisNotAnsweredQna(){
+		ArrayList<QnaVO> list = new ArrayList<QnaVO>();
+		String sql = "select * from qna where a_content is null order by q_date";
+		try {
+			Connection conn =ConnectionProvider.getConnection();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while(rs.next()) {
+				list.add(new QnaVO(rs.getInt(1), rs.getString(2), rs.getString(3), 
+						rs.getDate(4), rs.getString(5), rs.getInt(6)));
+				System.out.println(rs.getString(2));
+			}
+			ConnectionProvider.close(conn, stmt, rs);
+		} catch (Exception e) {
+			System.out.println("예외:"+e.getMessage());
+		}
+		return list;
+	}
 	
 	public int getNextNo() {
 	      int no = 0;
